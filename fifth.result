@@ -1,0 +1,146 @@
+{
+	"result" : [
+		{
+			"_id" : 2000,
+			"total" : 2535
+		},
+		{
+			"_id" : 2005,
+			"total" : 4023
+		},
+		{
+			"_id" : 2002,
+			"total" : 2948
+		},
+		{
+			"_id" : 2007,
+			"total" : 4693
+		},
+		{
+			"_id" : 2004,
+			"total" : 3593
+		},
+		{
+			"_id" : 2001,
+			"total" : 2870
+		},
+		{
+			"_id" : 2003,
+			"total" : 3378
+		},
+		{
+			"_id" : 2010,
+			"total" : 5666
+		},
+		{
+			"_id" : 2008,
+			"total" : 5081
+		},
+		{
+			"_id" : 2009,
+			"total" : 5061
+		},
+		{
+			"_id" : 2006,
+			"total" : 4559
+		}
+	],
+	"ok" : 1
+}
+
+==========================
+
+USA:
+{
+	"result" : [
+		{
+			"_id" : "sex",
+			"total" : 60470
+		},
+		{
+			"_id" : "hardcore",
+			"total" : 53807
+		},
+		{
+			"_id" : "independent-film",
+			"total" : 26615
+		},
+		{
+			"_id" : "character-name-in-title",
+			"total" : 21914
+		},
+		{
+			"_id" : "murder",
+			"total" : 13789
+		},
+		{
+			"_id" : "oral-sex",
+			"total" : 12869
+		},
+		{
+			"_id" : "female-nudity",
+			"total" : 12161
+		},
+		{
+			"_id" : "anal-sex",
+			"total" : 11508
+		},
+		{
+			"_id" : "based-on-novel",
+			"total" : 9596
+		},
+		{
+			"_id" : "number-in-title",
+			"total" : 8353
+		}
+	],
+	"ok" : 1
+}
+
+
+Russia:
+{
+	"result" : [
+		{
+			"_id" : "tv-mini-series",
+			"total" : 413
+		},
+		{
+			"_id" : "russia",
+			"total" : 235
+		},
+		{
+			"_id" : "based-on-novel",
+			"total" : 199
+		},
+		{
+			"_id" : "love",
+			"total" : 155
+		},
+		{
+			"_id" : "female-nudity",
+			"total" : 108
+		},
+		{
+			"_id" : "murder",
+			"total" : 101
+		},
+		{
+			"_id" : "character-name-in-title",
+			"total" : 89
+		},
+		{
+			"_id" : "death",
+			"total" : 89
+		},
+		{
+			"_id" : "one-word-title",
+			"total" : 89
+		},
+		{
+			"_id" : "moscow-russia",
+			"total" : 83
+		}
+	],
+	"ok" : 1
+}

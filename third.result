@@ -1,0 +1,97 @@
+8715812 - до индекса
+9835020 - после индекса <-  размеры бд
+
+==============================================================================================================
+
+                                                              QUERY PLAN  -- до индекса
+-----------------------------------------------------------------------------------------------------------------------------------------
+ Hash Anti Join  (cost=1705117.37..2176152.68 rows=5485684 width=19) (actual time=120261.328..961563.735 rows=142270 loops=1)
+   Hash Cond: (n.id = ci.person_id)
+   ->  Seq Scan on name n  (cost=0.00..129773.72 rows=5555472 width=19) (actual time=0.014..18714.406 rows=5555236 loops=1)
+   ->  Hash  (cost=868122.72..868122.72 rows=51016772 width=4) (actual time=115843.957..115843.957 rows=51016773 loops=1)
+         Buckets: 4096  Batches: 4096 (originally 2048)  Memory Usage: 1025kB
+         ->  Seq Scan on cast_info ci  (cost=0.00..868122.72 rows=51016772 width=4) (actual time=0.043..92961.871 rows=51016773 loops=1)
+ Total runtime: 961600.710 ms
+
+                                                               QUERY PLAN -- после индекса
+------------------------------------------------------------------------------------------------------------------------------------------
+ Hash Anti Join  (cost=1705117.37..2176152.68 rows=5485684 width=19) (actual time=129793.860..1044940.759 rows=142270 loops=1)
+   Hash Cond: (n.id = ci.person_id)
+   ->  Seq Scan on name n  (cost=0.00..129773.72 rows=5555472 width=19) (actual time=0.009..28267.351 rows=5555236 loops=1)
+   ->  Hash  (cost=868122.72..868122.72 rows=51016772 width=4) (actual time=105147.342..128147.342 rows=51016773 loops=1)
+         Buckets: 4096  Batches: 4096 (originally 2048)  Memory Usage: 1025kB
+         ->  Seq Scan on cast_info ci  (cost=0.00..868122.72 rows=51016772 width=4) (actual time=0.006..85091.778 rows=51016773 loops=1)
+ Total runtime: 870975.161 ms
+
+===========================================================================================================
+
+                                                                QUERY PLAN
+------------------------------------------------------------------------------------------------------------------------------------------
+ Hash Semi Join  (cost=1103819.31..1218428.29 rows=7 width=104) (actual time=71940.106..78677.342 rows=47 loops=1)
+   Hash Cond: (person_info.person_id = name.id)
+   InitPlan 1 (returns $0)
+     ->  Seq Scan on title  (cost=0.00..108146.08 rows=1 width=4) (actual time=6571.511..7520.863 rows=1 loops=1)
+           Filter: ((title = 'Shaun of the Dead'::text) AND (production_year = 2004))
+           Rows Removed by Filter: 3694836
+   ->  Seq Scan on person_info  (cost=0.00..112487.58 rows=808122 width=108) (actual time=17.646..9603.093 rows=817468 loops=1)
+         Filter: (info_type_id = 17)
+         Rows Removed by Filter: 2819657
+   ->  Hash  (cost=995673.22..995673.22 rows=1 width=8) (actual time=68892.925..68892.925 rows=2 loops=1)
+         Buckets: 1024  Batches: 1  Memory Usage: 1kB
+         ->  Nested Loop  (cost=995665.18..995673.22 rows=1 width=8) (actual time=66697.002..68892.902 rows=2 loops=1)
+               ->  HashAggregate  (cost=995664.74..995664.76 rows=1 width=4) (actual time=65706.190..65706.843 rows=156 loops=1)
+                     ->  Seq Scan on cast_info  (cost=0.00..995664.65 rows=38 width=4) (actual time=8182.916..65704.799 rows=169 loops=1)
+                           Filter: (movie_id = $0)
+                           Rows Removed by Filter: 51016604
+               ->  Index Scan using name_pkey on name  (cost=0.43..8.46 rows=1 width=4) (actual time=20.412..20.412 rows=0 loops=156)
+                     Index Cond: (id = cast_info.person_id)
+                     Filter: ((name = 'Pegg, Simon'::text) OR (name = 'Frost, Nick'::text))
+                     Rows Removed by Filter: 1
+ Total runtime: 78677.853 ms
+
+                                                                QUERY PLAN
+-------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=1103823.54..1103946.08 rows=7 width=104) (actual time=70375.467..70378.054 rows=47 loops=1)
+   InitPlan 1 (returns $0)
+     ->  Seq Scan on title  (cost=0.00..108146.08 rows=1 width=4) (actual time=10213.567..11401.887 rows=1 loops=1)
+           Filter: ((title = 'Shaun of the Dead'::text) AND (production_year = 2004))
+           Rows Removed by Filter: 3694836
+   ->  HashAggregate  (cost=995673.22..995673.23 rows=1 width=8) (actual time=70361.365..70361.370 rows=2 loops=1)
+         ->  Nested Loop  (cost=995665.18..995673.22 rows=1 width=8) (actual time=68198.680..70361.330 rows=2 loops=1)
+               ->  HashAggregate  (cost=995664.74..995664.76 rows=1 width=4) (actual time=67239.087..67239.734 rows=156 loops=1)
+                     ->  Seq Scan on cast_info  (cost=0.00..995664.65 rows=38 width=4) (actual time=12286.414..67237.766 rows=169 loops=1)
+                           Filter: (movie_id = $0)
+                           Rows Removed by Filter: 51016604
+               ->  Index Scan using name_pkey on name  (cost=0.43..8.46 rows=1 width=4) (actual time=19.998..19.998 rows=0 loops=156)
+                     Index Cond: (id = cast_info.person_id)
+                     Filter: ((name = 'Pegg, Simon'::text) OR (name = 'Frost, Nick'::text))
+                     Rows Removed by Filter: 1
+   ->  Bitmap Heap Scan on person_info  (cost=4.23..126.70 rows=7 width=108) (actual time=7.519..8.302 rows=24 loops=2)
+         Recheck Cond: (person_id = name.id)
+         Filter: (info_type_id = 17)
+         Rows Removed by Filter: 50
+         ->  Bitmap Index Scan on person_info_person_index  (cost=0.00..4.23 rows=31 width=0) (actual time=0.129..0.129 rows=74 loops=2)
+               Index Cond: (person_id = name.id)
+ Total runtime: 70378.221 ms
+
+
+                                         QUERY PLAN - добавление записи до индекса
+---------------------------------------------------------------------------------------------
+ Insert on title  (cost=0.00..0.01 rows=1 width=0) (actual time=0.718..0.718 rows=0 loops=1)
+   ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=0.033..0.034 rows=1 loops=1)
+ Total runtime: 0.791 ms
+
+                                          QUERY PLAN
+ ---------------------------------------------------------------------------------------------
+  Insert on title  (cost=0.00..0.01 rows=1 width=0) (actual time=0.319..0.319 rows=0 loops=1)
+    ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=0.020..0.020 rows=1 loops=1)
+  Total runtime: 0.404 ms
+========================================================
+                                            QUERY PLAN - добавление записи после индекса
+  -----------------------------------------------------------------------------------------------
+   Insert on title  (cost=0.00..0.01 rows=1 width=0) (actual time=10.613..10.613 rows=0 loops=1)
+     ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=0.118..0.121 rows=1 loops=1)
+   Total runtime: 12.622 ms
+  (3 rows)
+
+
